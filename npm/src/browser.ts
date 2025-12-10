@@ -69,8 +69,22 @@ export function parse(source: string, options: ParseOptions = {}): ParseResult {
         throw new Error("WASM not initialized. Call init() first.");
     }
 
-    const result = globalThis.goFastParse(source, options);
-    return JSON.parse(result);
+    let result: string;
+    try {
+        result = globalThis.goFastParse(source, options);
+    } catch (e) {
+        return { error: `WASM execution failed: ${e instanceof Error ? e.message : String(e)}` };
+    }
+
+    if (typeof result !== "string") {
+        return { error: `Unexpected result type from WASM: ${typeof result}` };
+    }
+
+    try {
+        return JSON.parse(result);
+    } catch (e) {
+        return { error: `Failed to parse WASM output as JSON: ${e instanceof Error ? e.message : String(e)}` };
+    }
 }
 
 export * from "./types.js";

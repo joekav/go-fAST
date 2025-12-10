@@ -9,16 +9,39 @@ import (
 	"github.com/t14raptor/go-fast/serializer"
 )
 
+// errorJSON returns a JSON string for error responses
+func errorJSON(msg string) string {
+	// Simple JSON encoding - escape quotes and backslashes in the message
+	escaped := ""
+	for _, c := range msg {
+		switch c {
+		case '"':
+			escaped += `\"`
+		case '\\':
+			escaped += `\\`
+		case '\n':
+			escaped += `\n`
+		case '\r':
+			escaped += `\r`
+		case '\t':
+			escaped += `\t`
+		default:
+			escaped += string(c)
+		}
+	}
+	return `{"error":"` + escaped + `"}`
+}
+
 func parseJS(this js.Value, args []js.Value) (result any) {
 	// Recover from panics to prevent WASM from crashing
 	defer func() {
 		if r := recover(); r != nil {
-			result = map[string]any{"error": fmt.Sprintf("internal error: %v", r)}
+			result = errorJSON(fmt.Sprintf("internal error: %v", r))
 		}
 	}()
 
 	if len(args) < 1 {
-		return map[string]any{"error": "No source code provided"}
+		return errorJSON("no source code provided")
 	}
 
 	source := args[0].String()
@@ -34,7 +57,7 @@ func parseJS(this js.Value, args []js.Value) (result any) {
 
 	program, err := parser.ParseFile(source)
 	if err != nil {
-		return map[string]any{"error": err.Error()}
+		return errorJSON(err.Error())
 	}
 
 	if shouldResolve {
