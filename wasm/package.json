@@ -5,13 +5,6 @@
   "main": "index.js",
   "browser": "browser.js",
   "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "browser": "./browser.js",
-      "default": "./index.js"
-    },
-    "./wasm_exec.js": "./wasm_exec.js"
-  },
   "files": [
     "go-fast.wasm",
     "wasm_exec.js",

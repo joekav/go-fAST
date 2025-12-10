@@ -1,29 +1,28 @@
+import "./wasm_exec.js";
+
 let goFastParse = null;
 let initPromise = null;
 
 /**
  * Initialize the Go WASM module for browser environments
- * @param {string} [wasmUrl] - URL to the WASM file (defaults to same directory)
+ * @param {string} [wasmUrl] - URL to the WASM file (defaults to fetching from package)
  * @returns {Promise<void>}
  */
 async function init(wasmUrl) {
-  if (goFastParse) return;
-  if (initPromise) return initPromise;
+    if (goFastParse) return;
+    if (initPromise) return initPromise;
 
-  initPromise = (async () => {
-    const go = new Go();
+    initPromise = (async () => {
+        const go = new Go();
 
-    const wasmPath = wasmUrl || new URL("go-fast.wasm", import.meta.url).href;
-    const result = await WebAssembly.instantiateStreaming(
-      fetch(wasmPath),
-      go.importObject
-    );
+        const wasmPath = wasmUrl || new URL("go-fast.wasm", import.meta.url).href;
+        const result = await WebAssembly.instantiateStreaming(fetch(wasmPath), go.importObject);
 
-    go.run(result.instance);
-    goFastParse = globalThis.goFastParse;
-  })();
+        go.run(result.instance);
+        goFastParse = globalThis.goFastParse;
+    })();
 
-  return initPromise;
+    return initPromise;
 }
 
 /**
@@ -34,12 +33,12 @@ async function init(wasmUrl) {
  * @returns {Object} The parsed AST or an error object
  */
 function parse(source, options = {}) {
-  if (!goFastParse) {
-    throw new Error("WASM not initialized. Call init() first.");
-  }
+    if (!goFastParse) {
+        throw new Error("WASM not initialized. Call init() first.");
+    }
 
-  const result = goFastParse(source, options);
-  return JSON.parse(result);
+    const result = goFastParse(source, options);
+    return JSON.parse(result);
 }
 
 /**
@@ -50,8 +49,8 @@ function parse(source, options = {}) {
  * @returns {Promise<Object>} The parsed AST or an error object
  */
 async function parseAsync(source, options = {}) {
-  await init();
-  return parse(source, options);
+    await init();
+    return parse(source, options);
 }
 
 export { init, parse, parseAsync };
