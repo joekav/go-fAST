@@ -1,5 +1,5 @@
 {
-  "name": "@jxekav/go-fast",
+  "name": "@joekav/go-fast",
   "version": "0.0.1",
   "description": "A fast JavaScript parser written in Go, compiled to WebAssembly",
   "type": "module",
@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jxekav/go-fast.git"
+    "url": "git+https://github.com/joekav/go-fast.git"
   },
   "keywords": [
     "javascript",
@@ -48,9 +48,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jxekav/go-fast/issues"
+    "url": "https://github.com/joekav/go-fast/issues"
   },
-  "homepage": "https://github.com/jxekav/go-fast#readme",
+  "homepage": "https://github.com/joekav/go-fast#readme",
   "devDependencies": {
     "@types/node": "^24.10.2",
     "tsup": "^8.0.0",
