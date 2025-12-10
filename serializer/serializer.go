@@ -198,14 +198,14 @@ func (s *Serializer) writeOperator(t token.Token) {
 
 func (s *Serializer) writePosition(node ast.Node) {
 	s.writeStr(`"start":`)
-	s.writeInt(int(node.Idx0()))
+	s.writeInt(int(node.Idx0()) - 1) // Convert 1-based to 0-based
 	s.writeStr(`,"end":`)
-	s.writeInt(int(node.Idx1()))
+	s.writeInt(int(node.Idx1()) - 1) // Convert 1-based to 0-based
 }
 
 func (s *Serializer) writePositionStartOnly(start ast.Idx) {
 	s.writeStr(`"start":`)
-	s.writeInt(int(start))
+	s.writeInt(int(start) - 1) // Convert 1-based to 0-based
 }
 
 // Program
