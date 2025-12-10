@@ -664,7 +664,7 @@ func (p *parser) parseDotMember(left ast.Expr) ast.Expr {
 func (p *parser) parseBracketMember(left ast.Expr) *ast.MemberExpression {
 	p.expect(token.LeftBracket)
 	member := p.parseExpression()
-	p.expect(token.RightBracket)
+	rightBracket := p.expect(token.RightBracket)
 	return &ast.MemberExpression{
 		Object: p.makeExpr(left),
 		Property: &ast.MemberProperty{
@@ -672,6 +672,7 @@ func (p *parser) parseBracketMember(left ast.Expr) *ast.MemberExpression {
 				Expr: p.makeExpr(member),
 			},
 		},
+		RightBracket: rightBracket,
 	}
 }
 

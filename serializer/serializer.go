@@ -196,16 +196,25 @@ func (s *Serializer) writeOperator(t token.Token) {
 	}
 }
 
+// Convert 1-based Go position to 0-based ESTree position
+// Returns 0 if position is unset (was 0)
+func toESTreePos(pos ast.Idx) int {
+	if pos == 0 {
+		return 0
+	}
+	return int(pos) - 1
+}
+
 func (s *Serializer) writePosition(node ast.Node) {
 	s.writeStr(`"start":`)
-	s.writeInt(int(node.Idx0()) - 1) // Convert 1-based to 0-based
+	s.writeInt(toESTreePos(node.Idx0()))
 	s.writeStr(`,"end":`)
-	s.writeInt(int(node.Idx1()) - 1) // Convert 1-based to 0-based
+	s.writeInt(toESTreePos(node.Idx1()))
 }
 
 func (s *Serializer) writePositionStartOnly(start ast.Idx) {
 	s.writeStr(`"start":`)
-	s.writeInt(int(start) - 1) // Convert 1-based to 0-based
+	s.writeInt(toESTreePos(start))
 }
 
 // Program

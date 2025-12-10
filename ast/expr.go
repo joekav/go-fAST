@@ -73,8 +73,9 @@ type (
 	}
 
 	MemberExpression struct {
-		Object   *Expression
-		Property *MemberProperty
+		Object       *Expression
+		Property     *MemberProperty
+		RightBracket Idx // Position of ] for computed properties, 0 for dot access
 	}
 
 	MemberProperty struct {

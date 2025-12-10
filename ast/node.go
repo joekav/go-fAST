@@ -56,8 +56,19 @@ func (n *SuperExpression) Idx0() Idx       { return n.Idx }
 func (n *UnaryExpression) Idx0() Idx       { return n.Idx }
 func (n *UpdateExpression) Idx0() Idx      { return n.Idx }
 func (n *MetaProperty) Idx0() Idx          { return n.Idx }
-func (m *MemberExpression) Idx0() Idx      { return 0 }
-func (m *MemberExpression) Idx1() Idx      { return 0 }
+func (m *MemberExpression) Idx0() Idx { return m.Object.Expr.Idx0() }
+func (m *MemberExpression) Idx1() Idx {
+	if m.RightBracket > 0 {
+		return m.RightBracket + 1 // +1 to include the ] character
+	}
+	// Dot access - end is end of property
+	switch prop := m.Property.Prop.(type) {
+	case *Identifier:
+		return prop.Idx1()
+	default:
+		return m.Object.Expr.Idx1()
+	}
+}
 func (n *SpreadElement) Idx0() Idx {
 	return n.Expression.Expr.Idx0()
 }
@@ -187,7 +198,12 @@ func (n *IfStatement) Idx1() Idx {
 }
 func (n *LabelledStatement) Idx1() Idx { return n.Colon + 1 }
 func (n *Program) Idx1() Idx           { return n.Body[len(n.Body)-1].Stmt.Idx1() }
-func (n *ReturnStatement) Idx1() Idx   { return n.Return + 6 }
+func (n *ReturnStatement) Idx1() Idx {
+	if n.Argument != nil {
+		return n.Argument.Expr.Idx1()
+	}
+	return n.Return + 6
+}
 func (n *SwitchStatement) Idx1() Idx   { return n.Body[len(n.Body)-1].Idx1() }
 func (n *ThrowStatement) Idx1() Idx    { return n.Argument.Expr.Idx1() }
 func (n *TryStatement) Idx1() Idx {

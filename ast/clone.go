@@ -300,7 +300,7 @@ func (n *LabelledStatement) Clone() *LabelledStatement {
 	return &LabelledStatement{Label: n.Label.Clone(), Colon: n.Colon, Statement: n.Statement.Clone()}
 }
 func (n *MemberExpression) Clone() *MemberExpression {
-	return &MemberExpression{Object: n.Object.Clone(), Property: n.Property.Clone()}
+	return &MemberExpression{Object: n.Object.Clone(), Property: n.Property.Clone(), RightBracket: n.RightBracket}
 }
 func (n *MemberProperty) Clone() *MemberProperty {
 	var clonedMemberProp MemberProp

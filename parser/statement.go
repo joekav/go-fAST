@@ -498,9 +498,11 @@ func (p *parser) parseThrowStatement() ast.Stmt {
 }
 
 func (p *parser) parseSwitchStatement() ast.Stmt {
+	switchPos := p.idx
 	p.expect(token.Switch)
 	p.expect(token.LeftParenthesis)
 	node := &ast.SwitchStatement{
+		Switch:       switchPos,
 		Discriminant: p.makeExpr(p.parseExpression()),
 		Default:      -1,
 	}
@@ -534,9 +536,11 @@ func (p *parser) parseSwitchStatement() ast.Stmt {
 }
 
 func (p *parser) parseWithStatement() ast.Stmt {
+	withPos := p.idx
 	p.expect(token.With)
 	p.expect(token.LeftParenthesis)
 	node := &ast.WithStatement{
+		With:   withPos,
 		Object: p.makeExpr(p.parseExpression()),
 	}
 	p.expect(token.RightParenthesis)
@@ -762,8 +766,9 @@ func (p *parser) parseDoWhileStatement() ast.Stmt {
 		p.scope.inIteration = inIteration
 	}()
 
+	doPos := p.idx
 	p.expect(token.Do)
-	node := &ast.DoWhileStatement{}
+	node := &ast.DoWhileStatement{Do: doPos}
 	if p.token == token.LeftBrace {
 		node.Body = p.makeStmt(p.parseBlockStatement())
 	} else {
@@ -783,10 +788,12 @@ func (p *parser) parseDoWhileStatement() ast.Stmt {
 }
 
 func (p *parser) parseWhileStatement() ast.Stmt {
+	whilePos := p.idx
 	p.expect(token.While)
 	p.expect(token.LeftParenthesis)
 	node := &ast.WhileStatement{
-		Test: p.makeExpr(p.parseExpression()),
+		While: whilePos,
+		Test:  p.makeExpr(p.parseExpression()),
 	}
 	p.expect(token.RightParenthesis)
 	node.Body = p.makeStmt(p.parseIterationStatement())
@@ -795,9 +802,11 @@ func (p *parser) parseWhileStatement() ast.Stmt {
 }
 
 func (p *parser) parseIfStatement() ast.Stmt {
+	ifPos := p.idx
 	p.expect(token.If)
 	p.expect(token.LeftParenthesis)
 	node := &ast.IfStatement{
+		If:   ifPos,
 		Test: p.makeExpr(p.parseExpression()),
 	}
 	p.expect(token.RightParenthesis)
