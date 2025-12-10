@@ -27,21 +27,32 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Build WASM
-        run: GOOS=js GOARCH=wasm go build -o wasm/go-fast.wasm ./wasm
-
-      - name: Copy wasm_exec.js
-        run: cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/ || cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm/
+      - name: Install npm dependencies
+        working-directory: npm
+        run: npm install
 
       - name: Set package version
+        working-directory: npm
         run: |
-          cd wasm
           VERSION="${{ github.event.inputs.version || github.ref_name }}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
-      - name: Publish to npm
+      - name: Copy wasm_exec.js
         run: |
-          cd wasm
-          npm publish --access public
+          cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" npm/vendor/ || \
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" npm/vendor/
+
+      - name: Build WASM
+        run: |
+          mkdir -p npm/dist
+          GOOS=js GOARCH=wasm go build -o npm/dist/go-fast.wasm ./wasm
+
+      - name: Build JS
+        working-directory: npm
+        run: npm run build:js
+
+      - name: Publish to npm
+        working-directory: npm
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}

@@ -1,14 +1,22 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"syscall/js"
 
 	"github.com/t14raptor/go-fast/parser"
 	"github.com/t14raptor/go-fast/resolver"
+	"github.com/t14raptor/go-fast/serializer"
 )
 
-func parseJS(this js.Value, args []js.Value) any {
+func parseJS(this js.Value, args []js.Value) (result any) {
+	// Recover from panics to prevent WASM from crashing
+	defer func() {
+		if r := recover(); r != nil {
+			result = map[string]any{"error": fmt.Sprintf("internal error: %v", r)}
+		}
+	}()
+
 	if len(args) < 1 {
 		return map[string]any{"error": "No source code provided"}
 	}
@@ -33,12 +41,7 @@ func parseJS(this js.Value, args []js.Value) any {
 		resolver.Resolve(program)
 	}
 
-	result, err := json.Marshal(program)
-	if err != nil {
-		return map[string]any{"error": err.Error()}
-	}
-
-	return string(result)
+	return serializer.Serialize(program)
 }
 
 func main() {
