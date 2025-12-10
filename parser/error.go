@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 
+	"github.com/t14raptor/go-fast/ast"
 	"github.com/t14raptor/go-fast/token"
 )
 
@@ -12,10 +12,37 @@ const (
 	errUnexpectedEndOfInput = "Unexpected end of input"
 )
 
+// SyntaxError represents a parsing error with position information
+type SyntaxError struct {
+	Message string
+	Line    int
+	Column  int
+	Offset  int
+}
+
+func (e *SyntaxError) Error() string {
+	return fmt.Sprintf("%s (line %d, column %d)", e.Message, e.Line, e.Column)
+}
+
+// positionToLineColumn converts a byte offset to line and column numbers
+func positionToLineColumn(src string, offset int) (line, col int) {
+	line = 1
+	col = 1
+	for i := 0; i < offset && i < len(src); i++ {
+		if src[i] == '\n' {
+			line++
+			col = 1
+		} else {
+			col++
+		}
+	}
+	return line, col
+}
+
 // error ...
 func (p *parser) error(msg string, msgValues ...any) error {
 	msg = fmt.Sprintf(msg, msgValues...)
-	p.errors.Add(msg)
+	p.errors.Add(p.str, p.idx, msg)
 	return p.errors[len(p.errors)-1]
 }
 
@@ -52,11 +79,21 @@ func (p *parser) errorUnexpectedToken(tkn token.Token) error {
 }
 
 // ErrorList is a list of *Errors.
-type ErrorList []error
+type ErrorList []*SyntaxError
 
 // Add adds an Error with given position and message to an ErrorList.
-func (e *ErrorList) Add(msg string) {
-	*e = append(*e, errors.New(msg))
+func (e *ErrorList) Add(src string, idx ast.Idx, msg string) {
+	offset := int(idx) - 1 // Convert 1-based idx to 0-based offset
+	if offset < 0 {
+		offset = 0
+	}
+	line, col := positionToLineColumn(src, offset)
+	*e = append(*e, &SyntaxError{
+		Message: msg,
+		Line:    line,
+		Column:  col,
+		Offset:  offset,
+	})
 }
 
 // Error implements the Error interface.
