@@ -1,0 +1,38 @@
+{
+  "name": "@jxekav/go-fast",
+  "version": "0.0.1",
+  "description": "A fast JavaScript parser written in Go, compiled to WebAssembly",
+  "main": "index.js",
+  "browser": "browser.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "browser": "./browser.js",
+      "default": "./index.js"
+    },
+    "./wasm_exec.js": "./wasm_exec.js"
+  },
+  "files": [
+    "go-fast.wasm",
+    "wasm_exec.js",
+    "index.js",
+    "browser.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "GOOS=js GOARCH=wasm go build -o go-fast.wasm ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/t14raptor/go-fast"
+  },
+  "keywords": [
+    "javascript",
+    "parser",
+    "ast",
+    "wasm",
+    "webassembly",
+    "go"
+  ],
+  "license": "MIT"
+}
