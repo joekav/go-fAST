@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.0.1)'
+        required: true
+        default: '0.0.1'
 
 jobs:
   build-and-publish:
@@ -28,10 +33,11 @@ jobs:
       - name: Copy wasm_exec.js
         run: cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/ || cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm/
 
-      - name: Set package version from release tag
+      - name: Set package version
         run: |
           cd wasm
-          npm version "${{ github.ref_name }}" --no-git-tag-version --allow-same-version
+          VERSION="${{ github.event.inputs.version || github.ref_name }}"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Publish to npm
         run: |
