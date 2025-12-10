@@ -6,18 +6,17 @@ let initPromise = null;
 
 /**
  * Initialize the Go WASM module for browser environments
- * @param {string} [customWasmUrl] - URL to the WASM file (defaults to unpkg CDN)
  * @returns {Promise<void>}
  */
-async function init(customWasmUrl) {
+async function init() {
     if (goFastParse) return;
     if (initPromise) return initPromise;
 
     initPromise = (async () => {
         const go = new Go();
 
-        const wasmPath = customWasmUrl || `https://unpkg.com/${PKG_NAME}@${PKG_VERSION}/go-fast.wasm`;
-        const result = await WebAssembly.instantiateStreaming(fetch(wasmPath), go.importObject);
+        const wasmUrl = `https://unpkg.com/${PKG_NAME}@${PKG_VERSION}/go-fast.wasm`;
+        const result = await WebAssembly.instantiateStreaming(fetch(wasmUrl), go.importObject);
 
         go.run(result.instance);
         goFastParse = globalThis.goFastParse;
